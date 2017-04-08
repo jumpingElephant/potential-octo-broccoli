@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Automatic Octo Carnival</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico">
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Image and text -->
+    <nav class="navbar navbar-light bg-faded">
+        <h2 class="navbar-brand mb-0">Hallo, Alex!</h2>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Spritverbrauch</h1>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="card text-center">
+            <div class="card-header">
+                <ul class="nav nav-pills card-header-pills">
+                    <li class="nav-item action">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#entryModal" data-mode="create">Neuer Eintrag</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-block">
+                <table id="consumption-table" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Kilometerstand</th>
+                            <th>Distanz</th>
+                            <th>Füllmenge</th>
+                            <th>Kosten</th>
+                            <th>Preis je Liter</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <nav id="page-navigation">
+                    <ul></ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+
+    <hr/>
+
+    <footer>
+        <p>&copy; jumpingElephant 2017</p>
+    </footer>
+
+
+    <div class="modal fade" id="entryModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-block">
+                            <h5 class="card-title">Letzter Eintrag</h5>
+                            <p class="card-text"><span id="lastEntryMileage"></span> km, Distanz: <span id="currentDistance"></span> km</p>
+                        </div>
+                    </div>
+                    <div id="alert-container"></div>
+                    <form novalidate>
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">Datum</label>
+                            <div class="col-9">
+                                <input type="date" class="form-control" id="dateInput">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">Kilometerstand</label>
+                            <div class="col-9">
+                                <input type="number" class="form-control" id="mileageInput" placeholder="Kilometerstand">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">Füllmenge</label>
+                            <div class="col-9">
+                                <input type="number" class="form-control" id="quantityInput" placeholder="Füllmenge">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">Gesamtpreis</label>
+                            <div class="col-9">
+                                <input type="number" class="form-control" id="priceInput" placeholder="Gesamtpreis">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="submitButton">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Load scripts -->
+    <script src="scripts/vendor.js"></script>
+    <script id="consumption-row-template" type="text/x-handlebars-template">
+        <tbody>
+            {{#bills}}
+            <tr>
+                <td>{{dateFormat date 'L'}}</td>
+                <td>{{numberFormat mileage digits=0 postfix='km'}}</td>
+                <td>{{numberFormat distance digits=0 postfix='km'}}</td>
+                <td>{{numberFormat quantity digits=2 postfix='l'}}</td>
+                <td>{{numberFormat price digits=2 postfix='€'}}</td>
+                <td>{{numberFormat pricePerLiter digits=3 postfix='€'}}</td>
+                <td style="padding: 0.225em" class="action">
+                    <button class="btn btn-danger btn-sm" type="submit" title="Eintrag Löschen" data-id="{{mileage}}">
+                        <span class="fa fa-trash fa-sm"></span>
+                    </button>
+                </td>
+            </tr>
+            {{/bills}}
+        </tbody>
+    </script>
+    <script id="pagination-template" type="text/x-handlebars-template">
+        <ul class="pagination">
+            <li class="page-item action" data-goto="previous">
+                <a class="page-link">
+                    <span>&laquo;</span>
+                </a>
+            </li>
+            {{#pages}} {{{pageitem index active "Alex"}}} {{/pages}}
+            <li class="page-item action" data-goto="next">
+                <a class="page-link">
+                    <span>&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </script>
+    <script id="pagination-item-template" type="text/x-handlebars-template">
+        {{#if active}}
+        <li class="page-item active action" data-goto="{{index}}"><a class="page-link action">{{display}}</a></li>
+        {{else}}
+        <li class="page-item action" data-goto="{{index}}"><a class="page-link action">{{display}}</a></li>
+        {{/if}}
+    </script>
+    <script id="alert-template" type="text/x-handlebars-template">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+            <strong>{{summary}}</strong> {{detail}}
+        </div>
+    </script>
+</body>
+
+</html>
