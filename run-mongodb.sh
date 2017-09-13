@@ -10,3 +10,4 @@ docker run --name mongo-consumption \
 	--restart always \
 	--detach \
 	mongo
+

@@ -1,3 +1,4 @@
+# Also executed by install.sh
 if [ -z $1 ];
 then
 	echo Command: run.sh port
@@ -9,6 +10,7 @@ docker run --name consumption-app \
 	--network consumption_nw \
 	--link mongo-consumption:mongo \
 	--publish $1:4567 \
+        --volume /var/log/docker:/var/log \
 	--restart always \
 	--detach \
 	consumption
