@@ -100,7 +100,7 @@ public class ConsumptionApp {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             res.status(BAD_REQUEST);
-            return createErrorResponseMap("Invalid data format.");
+            return createErrorResponseMap("Ungültiges Datenformat.");
         }
         try {
             validateData(bill);
@@ -110,9 +110,10 @@ public class ConsumptionApp {
                     .filter(newMileage::equals)
                     .findAny()
                     .ifPresent(mileage -> {
-                        throw new RuntimeException("A Entry with this mileage exists already.");
+                        throw new IllegalArgumentException("Kilometerstand existiert bereits");
                     });
-        } catch (NullPointerException e) {
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.INFO, "Search for existing bills failed", e);
             res.status(BAD_REQUEST);
             return createErrorResponseMap(e.getMessage());
         }
