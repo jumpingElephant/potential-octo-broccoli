@@ -3,6 +3,7 @@ package net.ar.web.consumption;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mongodb.BasicDBObject;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,10 +95,10 @@ public class ConsumptionApp {
             return createErrorResponseMap("Automobile does not exist.");
         }
 
-        Bill bill = null;
+        Bill bill;
         try {
             bill = mapper.readValue(req.body(), Bill.class);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             res.status(BAD_REQUEST);
             return createErrorResponseMap("Ungültiges Datenformat.");
