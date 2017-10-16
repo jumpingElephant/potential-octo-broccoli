@@ -4,9 +4,9 @@ then
 	exit 1
 fi
 
-docker run --name mongo-consumption \
+sudo docker run --name mongo-consumption \
 	--volume $1:/data/db \
-	--network consumption_nw \
+	--network consumption_bridge \
 	--restart always \
 	--detach \
 	mongo
