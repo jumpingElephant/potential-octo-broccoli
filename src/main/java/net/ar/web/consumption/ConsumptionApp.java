@@ -53,9 +53,9 @@ public class ConsumptionApp {
         staticFileLocation("/public");
         path("/api", () -> {
             get("/consumption", ConsumptionApp::readAvailableAutomobiles, new JsonTransformer());
-            get("/consumption/:automobileId", ConsumptionApp::readBills, new JsonTransformer());
-            post("/consumption/:automobileId", ConsumptionApp::saveBill, new JsonTransformer());
-            delete("/consumption/:automobileId/:mileage", ConsumptionApp::deleteBill, new JsonTransformer());
+            get("/consumption/:automobileId/bills", ConsumptionApp::readBills, new JsonTransformer());
+            post("/consumption/:automobileId/bills", ConsumptionApp::saveBill, new JsonTransformer());
+            delete("/consumption/:automobileId/bills/:mileage", ConsumptionApp::deleteBill, new JsonTransformer());
         });
         get("/greeting", (req, res) -> "Hello World");
         get("*", (req, res) -> {
